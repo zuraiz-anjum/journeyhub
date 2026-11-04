@@ -3,6 +3,7 @@ const Destination = require('../models/Destination');
 const HttpError = require('../utils/httpError');
 const { requireAuth, optionalAuth, requireRole } = require('../middleware/auth');
 const { requireFields, checkId, checkUrl, escapeRegex } = require('../utils/validate');
+const { withRatings } = require('../utils/ratings');
 
 const router = express.Router();
 
@@ -58,7 +59,7 @@ router.get('/', optionalAuth, async (req, res) => {
   }
 
   const destinations = await Destination.find(filter).sort({ city: 1 }).lean();
-  res.json({ destinations });
+  res.json({ destinations: await withRatings(destinations) });
 });
 
 // GET /api/destinations/:id
@@ -69,7 +70,9 @@ router.get('/:id', optionalAuth, async (req, res) => {
   if (!destination || (destination.archived && !isAdmin)) {
     throw new HttpError(404, 'Destination not found');
   }
-  res.json({ destination });
+  const [withStats] = await withRatings([destination]);
+  const isFavourite = !!req.user && req.user.favourites.some((f) => f.toString() === destination._id.toString());
+  res.json({ destination: { ...withStats, isFavourite } });
 });
 
 // Admin only below
