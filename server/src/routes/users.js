@@ -1,6 +1,9 @@
 const express = require('express');
 const { requireAuth, requireRole } = require('../middleware/auth');
 const Destination = require('../models/Destination');
+const Story = require('../models/Story');
+const Review = require('../models/Review');
+const TripPlan = require('../models/TripPlan');
 const HttpError = require('../utils/httpError');
 const { checkId } = require('../utils/validate');
 const { withRatings } = require('../utils/ratings');
@@ -28,6 +31,17 @@ router.put('/me', async (req, res) => {
 
   await req.user.save();
   res.json({ user: req.user.toPublic() });
+});
+
+// GET /api/users/me/dashboard   counts for the member dashboard
+router.get('/me/dashboard', requireRole('member'), async (req, res) => {
+  const [stories, reviews, tripPlans, savedPlaces] = await Promise.all([
+    Story.countDocuments({ author: req.user._id }),
+    Review.countDocuments({ author: req.user._id }),
+    TripPlan.countDocuments({ owner: req.user._id }),
+    Destination.countDocuments({ _id: { $in: req.user.favourites }, archived: false }),
+  ]);
+  res.json({ counts: { stories, reviews, tripPlans, savedPlaces } });
 });
 
 // GET /api/users/me/favourites
