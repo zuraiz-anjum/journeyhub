@@ -7,6 +7,8 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import NotFoundPage from './pages/NotFoundPage';
+import DestinationsPage from './pages/DestinationsPage';
+import DestinationDetailPage from './pages/DestinationDetailPage';
 
 export default function App() {
   const dispatch = useAppDispatch();
@@ -24,6 +26,8 @@ export default function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/destinations" element={<DestinationsPage />} />
+          <Route path="/destinations/:id" element={<DestinationDetailPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>
