@@ -1,0 +1,33 @@
+body {
+  background-color: #f8f9fb;
+}
+
+.card-img-top.cover {
+  height: 180px;
+  object-fit: cover;
+}
+
+.detail-image {
+  max-height: 360px;
+  width: 100%;
+  object-fit: cover;
+}
+
+.story-text {
+  white-space: pre-line;
+}
+
+.rating-stars {
+  color: #f0ad00;
+  letter-spacing: 1px;
+}
+
+.star-input button {
+  font-size: 1.5rem;
+  line-height: 1;
+  color: #ccc;
+}
+
+.star-input button.on {
+  color: #f0ad00;
+}
