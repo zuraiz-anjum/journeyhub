@@ -12,6 +12,7 @@ import DestinationDetailPage from './pages/DestinationDetailPage';
 import StoryFeedPage from './pages/StoryFeedPage';
 import StoryDetailPage from './pages/StoryDetailPage';
 import StoryFormPage from './pages/StoryFormPage';
+import FavouritesPage from './pages/FavouritesPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
 export default function App() {
@@ -47,6 +48,14 @@ export default function App() {
             element={
               <ProtectedRoute role="member">
                 <StoryFormPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/favourites"
+            element={
+              <ProtectedRoute role="member">
+                <FavouritesPage />
               </ProtectedRoute>
             }
           />
