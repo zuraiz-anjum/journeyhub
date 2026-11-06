@@ -123,7 +123,9 @@ router.put('/:id', requireAuth, async (req, res) => {
     checkUrl(imageUrl);
     story.imageUrl = imageUrl;
   }
-  if (destination !== undefined) {
+  // only check the destination when it changed, so a story about a place that was
+  // archived later can still be edited
+  if (destination !== undefined && String(destination) !== story.destination?._id.toString()) {
     await checkDestination(destination);
     story.destination = destination;
   }
