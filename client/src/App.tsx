@@ -17,6 +17,7 @@ import FavouritesPage from './pages/FavouritesPage';
 import TripsPage from './pages/TripsPage';
 import TripFormPage from './pages/TripFormPage';
 import TripDetailPage from './pages/TripDetailPage';
+import BookingsPage from './pages/BookingsPage';
 
 const memberOnly = (page: ReactNode) => <ProtectedRoute role="member">{page}</ProtectedRoute>;
 
@@ -51,6 +52,8 @@ export default function App() {
           <Route path="/trips/new" element={memberOnly(<TripFormPage />)} />
           <Route path="/trips/:id" element={memberOnly(<TripDetailPage />)} />
           <Route path="/trips/:id/edit" element={memberOnly(<TripFormPage />)} />
+
+          <Route path="/bookings" element={memberOnly(<BookingsPage />)} />
 
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
