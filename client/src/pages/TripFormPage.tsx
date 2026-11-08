@@ -33,6 +33,15 @@ export default function TripFormPage() {
     });
   }, [existing.data]);
 
+  // the list only has live destinations; a place on this trip that the admin archived
+  // later is still shown so the member can keep it or untick it
+  const options: { _id: string; city: string; archived: boolean }[] = (destinations.data?.destinations ?? []).map(
+    (d) => ({ _id: d._id, city: d.city, archived: false })
+  );
+  for (const d of existing.data?.trip.destinations ?? []) {
+    if (!options.some((o) => o._id === d._id)) options.push({ _id: d._id, city: d.city, archived: true });
+  }
+
   function toggleDestination(destId: string) {
     setForm((f) => ({
       ...f,
@@ -108,7 +117,7 @@ export default function TripFormPage() {
             <span className="form-label d-block">Destinations</span>
             {destinations.loading && <Loading />}
             <div className="d-flex flex-wrap gap-3">
-              {destinations.data?.destinations.map((d) => (
+              {options.map((d) => (
                 <div className="form-check" key={d._id}>
                   <input
                     id={`dest-${d._id}`}
@@ -119,6 +128,7 @@ export default function TripFormPage() {
                   />
                   <label htmlFor={`dest-${d._id}`} className="form-check-label">
                     {d.city}
+                    {d.archived && <span className="text-muted small"> (archived)</span>}
                   </label>
                 </div>
               ))}

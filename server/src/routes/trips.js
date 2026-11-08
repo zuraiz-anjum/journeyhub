@@ -26,12 +26,16 @@ function tripLength(start, end) {
   return Math.round((end - start) / DAY_MS) + 1;
 }
 
-async function cleanDestinations(list) {
+// alreadyOnTrip: destinations the trip had before an edit. They may have been archived
+// since, which is fine, the member only cannot add an archived destination as a new one.
+async function cleanDestinations(list, alreadyOnTrip = []) {
   if (!Array.isArray(list)) throw new HttpError(400, 'Destinations must be a list');
   const ids = [...new Set(list.map(String))];
   ids.forEach((id) => checkId(id, 'destination'));
-  const count = await Destination.countDocuments({ _id: { $in: ids }, archived: false });
-  if (count !== ids.length) throw new HttpError(400, 'One of the destinations does not exist');
+  const kept = new Set(alreadyOnTrip.map(String));
+  const added = ids.filter((id) => !kept.has(id));
+  const count = await Destination.countDocuments({ _id: { $in: added }, archived: false });
+  if (count !== added.length) throw new HttpError(400, 'One of the destinations does not exist');
   return ids;
 }
 
@@ -107,7 +111,7 @@ router.put('/:id', async (req, res) => {
   const length = tripLength(trip.startDate, trip.endDate);
   if (length > MAX_TRIP_DAYS) throw new HttpError(400, `Trips can be at most ${MAX_TRIP_DAYS} days long`);
 
-  if (destinations !== undefined) trip.destinations = await cleanDestinations(destinations);
+  if (destinations !== undefined) trip.destinations = await cleanDestinations(destinations, trip.destinations);
   if (days !== undefined) {
     trip.days = cleanDays(days, length);
   } else if (trip.days.some((d) => d.dayNumber > length)) {

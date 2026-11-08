@@ -42,6 +42,16 @@ export default function StoryFormPage() {
     });
   }, [existing.data, user]);
 
+  // a story about a place the admin archived later keeps that place in the list
+  const options = (destinations.data?.destinations ?? []).map((d) => ({
+    _id: d._id,
+    label: d.city + (d.country ? `, ${d.country}` : ''),
+  }));
+  const current = existing.data?.story.destination;
+  if (current && !options.some((o) => o._id === current._id)) {
+    options.push({ _id: current._id, label: `${current.city} (archived)` });
+  }
+
   function update(field: keyof StoryForm, value: string) {
     setForm((f) => ({ ...f, [field]: value }));
   }
@@ -87,10 +97,9 @@ export default function StoryFormPage() {
               disabled={destinations.loading}
             >
               <option value="">{destinations.loading ? 'Loading...' : 'Choose a destination'}</option>
-              {destinations.data?.destinations.map((d) => (
+              {options.map((d) => (
                 <option key={d._id} value={d._id}>
-                  {d.city}
-                  {d.country ? `, ${d.country}` : ''}
+                  {d.label}
                 </option>
               ))}
             </select>
