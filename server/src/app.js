@@ -9,6 +9,8 @@ const storyRoutes = require('./routes/stories');
 const reviewRoutes = require('./routes/reviews');
 const tripRoutes = require('./routes/trips');
 const reportRoutes = require('./routes/reports');
+const accommodationRoutes = require('./routes/accommodations');
+const bookingRoutes = require('./routes/bookings');
 const { notFound, errorHandler } = require('./middleware/errorHandler');
 
 const app = express();
@@ -38,6 +40,8 @@ app.use('/api/stories', storyRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/trips', tripRoutes);
 app.use('/api/reports', reportRoutes);
+app.use('/api/accommodations', accommodationRoutes);
+app.use('/api/bookings', bookingRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

@@ -4,6 +4,7 @@ const Destination = require('../models/Destination');
 const Story = require('../models/Story');
 const Review = require('../models/Review');
 const TripPlan = require('../models/TripPlan');
+const BookingRequest = require('../models/BookingRequest');
 const HttpError = require('../utils/httpError');
 const { checkId } = require('../utils/validate');
 const { withRatings } = require('../utils/ratings');
@@ -35,13 +36,14 @@ router.put('/me', async (req, res) => {
 
 // GET /api/users/me/dashboard   counts for the member dashboard
 router.get('/me/dashboard', requireRole('member'), async (req, res) => {
-  const [stories, reviews, tripPlans, savedPlaces] = await Promise.all([
+  const [stories, reviews, tripPlans, savedPlaces, pendingBookings] = await Promise.all([
     Story.countDocuments({ author: req.user._id }),
     Review.countDocuments({ author: req.user._id }),
     TripPlan.countDocuments({ owner: req.user._id }),
     Destination.countDocuments({ _id: { $in: req.user.favourites }, archived: false }),
+    BookingRequest.countDocuments({ member: req.user._id, status: 'Pending' }),
   ]);
-  res.json({ counts: { stories, reviews, tripPlans, savedPlaces } });
+  res.json({ counts: { stories, reviews, tripPlans, savedPlaces, pendingBookings } });
 });
 
 // GET /api/users/me/favourites
