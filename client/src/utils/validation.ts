@@ -71,3 +71,22 @@ export function validateBooking(form: BookingForm, maxGuests: number): string | 
   if (guests > maxGuests) return `This place takes at most ${maxGuests} guests`;
   return null;
 }
+
+export interface DestinationForm {
+  city: string;
+  country: string;
+  description: string;
+  places: string;
+  estimatedBudget: string;
+  imageUrl: string;
+}
+
+export function validateDestination(form: DestinationForm): string | null {
+  if (!form.city.trim()) return 'City is required';
+  if (!form.description.trim()) return 'Description is required';
+  if (form.estimatedBudget === '') return 'Estimated budget is required';
+  const budget = Number(form.estimatedBudget);
+  if (Number.isNaN(budget) || budget < 0) return 'Estimated budget must be a number of 0 or more';
+  if (!isValidUrl(form.imageUrl)) return 'Image URL must start with http:// or https://';
+  return null;
+}

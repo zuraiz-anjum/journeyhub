@@ -18,8 +18,11 @@ import TripsPage from './pages/TripsPage';
 import TripFormPage from './pages/TripFormPage';
 import TripDetailPage from './pages/TripDetailPage';
 import BookingsPage from './pages/BookingsPage';
+import AdminDestinationsPage from './pages/admin/AdminDestinationsPage';
+import AdminDestinationFormPage from './pages/admin/AdminDestinationFormPage';
 
 const memberOnly = (page: ReactNode) => <ProtectedRoute role="member">{page}</ProtectedRoute>;
+const adminOnly = (page: ReactNode) => <ProtectedRoute role="admin">{page}</ProtectedRoute>;
 
 export default function App() {
   const dispatch = useAppDispatch();
@@ -54,6 +57,10 @@ export default function App() {
           <Route path="/trips/:id/edit" element={memberOnly(<TripFormPage />)} />
 
           <Route path="/bookings" element={memberOnly(<BookingsPage />)} />
+
+          <Route path="/admin/destinations" element={adminOnly(<AdminDestinationsPage />)} />
+          <Route path="/admin/destinations/new" element={adminOnly(<AdminDestinationFormPage />)} />
+          <Route path="/admin/destinations/:id/edit" element={adminOnly(<AdminDestinationFormPage />)} />
 
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
