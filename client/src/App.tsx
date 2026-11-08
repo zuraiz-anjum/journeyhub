@@ -1,0 +1,32 @@
+import { useEffect } from 'react';
+import { Route, Routes } from 'react-router-dom';
+import { useAppDispatch } from './store';
+import { fetchCurrentUser } from './store/authSlice';
+import NavBar from './components/NavBar';
+import HomePage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import NotFoundPage from './pages/NotFoundPage';
+
+export default function App() {
+  const dispatch = useAppDispatch();
+
+  // restore the session from the cookie when the app first loads
+  useEffect(() => {
+    dispatch(fetchCurrentUser());
+  }, [dispatch]);
+
+  return (
+    <>
+      <NavBar />
+      <main className="container pb-5">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </main>
+    </>
+  );
+}
