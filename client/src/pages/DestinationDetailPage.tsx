@@ -9,6 +9,7 @@ import RatingStars from '../components/RatingStars';
 import { FALLBACK_IMAGE } from '../utils/images';
 import { ErrorAlert, Loading } from '../components/StatusMessages';
 import ReviewSection from '../components/ReviewSection';
+import AccommodationList from '../components/AccommodationList';
 
 export default function DestinationDetailPage() {
   const { id } = useParams();
@@ -106,6 +107,11 @@ export default function DestinationDetailPage() {
         </div>
       </div>
 
+      <p className="mt-3">
+        <Link to={`/stories?destination=${destination._id}`}>Read travel stories about {destination.city} &rarr;</Link>
+      </p>
+
+      <AccommodationList destinationId={destination._id} />
       <ReviewSection destinationId={destination._id} onChanged={reload} />
     </>
   );

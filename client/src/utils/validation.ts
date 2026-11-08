@@ -53,3 +53,21 @@ export function validateTrip(form: TripForm): string | null {
   if (days > MAX_TRIP_DAYS) return `Trips can be at most ${MAX_TRIP_DAYS} days long`;
   return null;
 }
+
+export interface BookingForm {
+  checkIn: string;
+  checkOut: string;
+  guests: string;
+  note: string;
+}
+
+export function validateBooking(form: BookingForm, maxGuests: number): string | null {
+  const today = new Date().toISOString().slice(0, 10);
+  if (!form.checkIn || !form.checkOut) return 'Please pick check-in and check-out dates';
+  if (form.checkIn < today) return 'Check-in date cannot be in the past';
+  if (form.checkOut <= form.checkIn) return 'Check-out must be at least one day after check-in';
+  const guests = Number(form.guests);
+  if (!Number.isInteger(guests) || guests < 1) return 'Guests must be a whole number of 1 or more';
+  if (guests > maxGuests) return `This place takes at most ${maxGuests} guests`;
+  return null;
+}
