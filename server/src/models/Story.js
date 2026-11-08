@@ -13,6 +13,4 @@ const storySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-storySchema.index({ title: 'text', text: 'text' });
-
 module.exports = mongoose.model('Story', storySchema);
