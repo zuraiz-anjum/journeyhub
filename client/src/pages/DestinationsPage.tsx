@@ -20,6 +20,10 @@ export default function DestinationsPage() {
 
   function applyFilters(e: FormEvent) {
     e.preventDefault();
+    if (Number(minBudget) < 0 || Number(maxBudget) < 0) {
+      setFilterError('Budget cannot be negative');
+      return;
+    }
     if (minBudget && maxBudget && Number(minBudget) > Number(maxBudget)) {
       setFilterError('Minimum budget cannot be more than the maximum');
       return;

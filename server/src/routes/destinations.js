@@ -50,12 +50,17 @@ router.get('/', optionalAuth, async (req, res) => {
     filter.$or = [{ city: pattern }, { country: pattern }];
   }
   if (minBudget || maxBudget) {
-    filter.estimatedBudget = {};
-    if (minBudget) filter.estimatedBudget.$gte = Number(minBudget);
-    if (maxBudget) filter.estimatedBudget.$lte = Number(maxBudget);
-    if (Number.isNaN(Number(minBudget || 0)) || Number.isNaN(Number(maxBudget || 0))) {
-      throw new HttpError(400, 'Budget filters must be numbers');
+    const min = Number(minBudget || 0);
+    const max = Number(maxBudget || 0);
+    if (Number.isNaN(min) || Number.isNaN(max) || min < 0 || max < 0) {
+      throw new HttpError(400, 'Budget filters must be positive numbers');
     }
+    if (minBudget && maxBudget && min > max) {
+      throw new HttpError(400, 'Minimum budget cannot be more than the maximum');
+    }
+    filter.estimatedBudget = {};
+    if (minBudget) filter.estimatedBudget.$gte = min;
+    if (maxBudget) filter.estimatedBudget.$lte = max;
   }
 
   const destinations = await Destination.find(filter).sort({ city: 1 }).lean();
