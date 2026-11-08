@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../store';
 import { clearAuthError, login } from '../store/authSlice';
 import { ErrorAlert } from '../components/StatusMessages';
@@ -9,7 +9,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [formError, setFormError] = useState<string | null>(null);
 
-  const { loading, error } = useAppSelector((state) => state.auth);
+  const { user, loading, error } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -31,6 +31,11 @@ export default function LoginPage() {
       const home = result.payload.role === 'admin' ? '/admin/destinations' : '/dashboard';
       navigate(from || home, { replace: true });
     }
+  }
+
+  // already logged in, no need to show the form
+  if (user && !loading) {
+    return <Navigate to={from || (user.role === 'admin' ? '/admin/destinations' : '/dashboard')} replace />;
   }
 
   return (
