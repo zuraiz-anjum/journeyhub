@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useApi } from '../hooks/useApi';
 import type { Destination } from '../types';
@@ -12,6 +12,13 @@ export default function DestinationsPage() {
   const [minBudget, setMinBudget] = useState(searchParams.get('minBudget') ?? '');
   const [maxBudget, setMaxBudget] = useState(searchParams.get('maxBudget') ?? '');
   const [filterError, setFilterError] = useState<string | null>(null);
+
+  // keep the boxes in step with the url (back/forward buttons, navbar link)
+  useEffect(() => {
+    setCity(searchParams.get('city') ?? '');
+    setMinBudget(searchParams.get('minBudget') ?? '');
+    setMaxBudget(searchParams.get('maxBudget') ?? '');
+  }, [searchParams]);
 
   const query = searchParams.toString();
   const { data, loading, error, reload } = useApi<{ destinations: Destination[] }>(

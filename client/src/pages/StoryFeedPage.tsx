@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useApi } from '../hooks/useApi';
 import { useAppSelector } from '../store';
@@ -14,6 +14,12 @@ export default function StoryFeedPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [q, setQ] = useState(searchParams.get('q') ?? '');
   const [destination, setDestination] = useState(searchParams.get('destination') ?? '');
+
+  // keep the search box and the select in step with the url (back button, navbar link)
+  useEffect(() => {
+    setQ(searchParams.get('q') ?? '');
+    setDestination(searchParams.get('destination') ?? '');
+  }, [searchParams]);
 
   const params = new URLSearchParams(searchParams);
   params.set('limit', String(PAGE_SIZE));
