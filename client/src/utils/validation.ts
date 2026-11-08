@@ -34,3 +34,22 @@ export function validateRating(rating: number): string | null {
   if (!Number.isInteger(rating) || rating < 1 || rating > 5) return 'Please pick a rating from 1 to 5 stars';
   return null;
 }
+
+export const MAX_TRIP_DAYS = 60;
+
+export interface TripForm {
+  title: string;
+  startDate: string;
+  endDate: string;
+  destinations: string[];
+  notes: string;
+}
+
+export function validateTrip(form: TripForm): string | null {
+  if (!form.title.trim()) return 'Please give the trip a title';
+  if (!form.startDate || !form.endDate) return 'Please pick a start and an end date';
+  if (form.endDate < form.startDate) return 'End date cannot be before the start date';
+  const days = (new Date(form.endDate).getTime() - new Date(form.startDate).getTime()) / 86400000 + 1;
+  if (days > MAX_TRIP_DAYS) return `Trips can be at most ${MAX_TRIP_DAYS} days long`;
+  return null;
+}
