@@ -63,3 +63,16 @@ export function acceptNextDialog(page: Page) {
 export async function hasHorizontalScroll(page: Page): Promise<boolean> {
   return page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
 }
+
+// buttons and links in the page content that stick out past the right edge of the window
+// (for example an action button in a wide table that only shows after scrolling sideways)
+export async function controlsOutsideWindow(page: Page): Promise<string[]> {
+  return page.evaluate(() =>
+    [...document.querySelectorAll('main button, main a')]
+      .filter((el) => {
+        const box = el.getBoundingClientRect();
+        return box.width > 0 && box.right > window.innerWidth + 1;
+      })
+      .map((el) => (el.textContent ?? '').trim())
+  );
+}

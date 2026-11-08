@@ -53,8 +53,8 @@ export default function AdminDestinationsPage() {
             <thead>
               <tr>
                 <th>City</th>
-                <th>Budget</th>
-                <th>Rating</th>
+                <th className="d-none d-sm-table-cell">Budget</th>
+                <th className="d-none d-sm-table-cell">Rating</th>
                 <th>Status</th>
                 <th />
               </tr>
@@ -66,8 +66,8 @@ export default function AdminDestinationsPage() {
                     <Link to={`/destinations/${d._id}`}>{d.city}</Link>
                     <div className="small text-muted">{d.country}</div>
                   </td>
-                  <td>{formatMoney(d.estimatedBudget)}</td>
-                  <td>{d.averageRating === null ? '-' : `${d.averageRating} (${d.reviewCount})`}</td>
+                  <td className="d-none d-sm-table-cell">{formatMoney(d.estimatedBudget)}</td>
+                  <td className="d-none d-sm-table-cell">{d.averageRating === null ? '-' : `${d.averageRating} (${d.reviewCount})`}</td>
                   <td>
                     {d.archived ? (
                       <span className="badge text-bg-secondary">Archived</span>
@@ -75,18 +75,20 @@ export default function AdminDestinationsPage() {
                       <span className="badge text-bg-success">Live</span>
                     )}
                   </td>
-                  <td className="text-end text-nowrap">
-                    <Link to={`/admin/destinations/${d._id}/edit`} className="btn btn-sm btn-outline-primary me-2">
-                      Edit
-                    </Link>
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-outline-secondary"
-                      disabled={busyId === d._id}
-                      onClick={() => setArchived(d, !d.archived)}
-                    >
-                      {d.archived ? 'Restore' : 'Archive'}
-                    </button>
+                  <td className="text-end">
+                    <div className="d-flex flex-column flex-sm-row gap-1 justify-content-end">
+                      <Link to={`/admin/destinations/${d._id}/edit`} className="btn btn-sm btn-outline-primary">
+                        Edit
+                      </Link>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-secondary"
+                        disabled={busyId === d._id}
+                        onClick={() => setArchived(d, !d.archived)}
+                      >
+                        {d.archived ? 'Restore' : 'Archive'}
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

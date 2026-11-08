@@ -225,9 +225,9 @@ export default function AdminAccommodationsPage() {
             <thead>
               <tr>
                 <th>Name</th>
-                <th>Destination</th>
-                <th>Price</th>
-                <th>Guests</th>
+                <th className="d-none d-md-table-cell">Destination</th>
+                <th className="d-none d-md-table-cell">Price</th>
+                <th className="d-none d-md-table-cell">Guests</th>
                 <th>Status</th>
                 <th />
               </tr>
@@ -238,10 +238,14 @@ export default function AdminAccommodationsPage() {
                   <td>
                     {a.name}
                     <div className="small text-muted text-capitalize">{a.type}</div>
+                    {/* on a phone these go under the name instead of their own columns */}
+                    <div className="small text-muted d-md-none">
+                      {a.destination?.city ?? '-'} · {formatMoney(a.pricePerNight)} · up to {a.maxGuests}
+                    </div>
                   </td>
-                  <td>{a.destination?.city ?? '-'}</td>
-                  <td>{formatMoney(a.pricePerNight)}</td>
-                  <td>{a.maxGuests}</td>
+                  <td className="d-none d-md-table-cell">{a.destination?.city ?? '-'}</td>
+                  <td className="d-none d-md-table-cell">{formatMoney(a.pricePerNight)}</td>
+                  <td className="d-none d-md-table-cell">{a.maxGuests}</td>
                   <td>
                     {a.active ? (
                       <span className="badge text-bg-success">Active</span>
@@ -249,16 +253,18 @@ export default function AdminAccommodationsPage() {
                       <span className="badge text-bg-secondary">Inactive</span>
                     )}
                   </td>
-                  <td className="text-end text-nowrap">
-                    <button type="button" className="btn btn-sm btn-outline-primary me-1" onClick={() => startEdit(a)}>
-                      Edit
-                    </button>
-                    <button type="button" className="btn btn-sm btn-outline-secondary me-1" onClick={() => toggleActive(a)}>
-                      {a.active ? 'Deactivate' : 'Activate'}
-                    </button>
-                    <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => remove(a)}>
-                      Delete
-                    </button>
+                  <td className="text-end">
+                    <div className="d-flex flex-column flex-lg-row gap-1 justify-content-end">
+                      <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => startEdit(a)}>
+                        Edit
+                      </button>
+                      <button type="button" className="btn btn-sm btn-outline-secondary" onClick={() => toggleActive(a)}>
+                        {a.active ? 'Deactivate' : 'Activate'}
+                      </button>
+                      <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => remove(a)}>
+                        Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
