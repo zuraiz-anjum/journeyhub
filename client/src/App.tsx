@@ -9,6 +9,10 @@ import RegisterPage from './pages/RegisterPage';
 import NotFoundPage from './pages/NotFoundPage';
 import DestinationsPage from './pages/DestinationsPage';
 import DestinationDetailPage from './pages/DestinationDetailPage';
+import StoryFeedPage from './pages/StoryFeedPage';
+import StoryDetailPage from './pages/StoryDetailPage';
+import StoryFormPage from './pages/StoryFormPage';
+import ProtectedRoute from './components/ProtectedRoute';
 
 export default function App() {
   const dispatch = useAppDispatch();
@@ -28,6 +32,24 @@ export default function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/destinations" element={<DestinationsPage />} />
           <Route path="/destinations/:id" element={<DestinationDetailPage />} />
+          <Route path="/stories" element={<StoryFeedPage />} />
+          <Route
+            path="/stories/new"
+            element={
+              <ProtectedRoute role="member">
+                <StoryFormPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/stories/:id" element={<StoryDetailPage />} />
+          <Route
+            path="/stories/:id/edit"
+            element={
+              <ProtectedRoute role="member">
+                <StoryFormPage />
+              </ProtectedRoute>
+            }
+          />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>
