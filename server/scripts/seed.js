@@ -93,7 +93,7 @@ async function seed() {
   // make sure indexes (unique email, one review per destination) exist
   await Promise.all(models.map((m) => m.syncIndexes()));
 
-  // ---- users (all fictional) ----
+  // users (all fictional)
   const [adminHash, memberHash] = await Promise.all([bcrypt.hash('Admin123!', 10), bcrypt.hash('Member123!', 10)]);
   await User.create({ name: 'Site Admin', email: 'admin@journeyhub.test', passwordHash: adminHash, role: 'admin' });
   const maya = await User.create({
@@ -111,7 +111,7 @@ async function seed() {
     bio: 'Photography and long train rides.',
   });
 
-  // ---- destinations ----
+  // destinations
   const destinations = await Destination.insertMany(destinationData.map((d) => ({ ...d, imageUrl: image(d.city) })));
   const byCity = Object.fromEntries(destinations.map((d) => [d.city, d]));
 
@@ -119,7 +119,7 @@ async function seed() {
   omar.favourites = [byCity.Lisbon._id];
   await Promise.all([maya.save(), omar.save()]);
 
-  // ---- stories (8 so the feed has two pages) ----
+  // stories (8 so the feed has two pages)
   const stories = await Story.insertMany([
     {
       author: maya._id,
@@ -179,7 +179,7 @@ async function seed() {
     },
   ]);
 
-  // ---- reviews ----
+  // reviews
   const reviews = await Review.insertMany([
     { author: maya._id, destination: byCity.Hunza._id, rating: 5, comment: 'Most beautiful place I have been to.' },
     { author: omar._id, destination: byCity.Hunza._id, rating: 4, comment: 'Amazing, but the road is tiring.' },
@@ -189,7 +189,7 @@ async function seed() {
     { author: omar._id, destination: byCity.Istanbul._id, rating: 3, comment: 'Too crowded in summer, go in spring.' },
   ]);
 
-  // ---- trip plan for Maya ----
+  // trip plan for Maya
   await TripPlan.create({
     owner: maya._id,
     title: 'Spring in Lisbon',
@@ -204,7 +204,7 @@ async function seed() {
     ],
   });
 
-  // ---- accommodations ----
+  // accommodations
   const stays = await Accommodation.insertMany([
     { destination: byCity.Lisbon._id, name: 'Alfama Rooftop Guesthouse', type: 'guesthouse', pricePerNight: 70, maxGuests: 2, description: 'Small rooms, big terrace.' },
     { destination: byCity.Lisbon._id, name: 'Tagus River Hostel', type: 'hostel', pricePerNight: 25, maxGuests: 1, description: 'Dorm beds, free breakfast.' },
@@ -214,14 +214,14 @@ async function seed() {
     { destination: byCity['Cape Town']._id, name: 'Sea Point Apartment', type: 'apartment', pricePerNight: 95, maxGuests: 4, description: 'Walk to the promenade.' },
   ]);
 
-  // ---- booking requests ----
+  // booking requests
   await BookingRequest.insertMany([
     { member: maya._id, accommodation: stays[0]._id, checkIn: daysFromToday(40), checkOut: daysFromToday(43), guests: 2, status: 'Pending', note: 'Late check-in please' },
     { member: omar._id, accommodation: stays[3]._id, checkIn: daysFromToday(20), checkOut: daysFromToday(24), guests: 1, status: 'Confirmed' },
     { member: omar._id, accommodation: stays[2]._id, checkIn: daysFromToday(70), checkOut: daysFromToday(75), guests: 3, status: 'Pending' },
   ]);
 
-  // ---- one open report so the admin page is not empty ----
+  // one open report so the admin page is not empty
   await Report.create({
     reporter: maya._id,
     targetType: 'review',

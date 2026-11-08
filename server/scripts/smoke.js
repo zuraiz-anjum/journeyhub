@@ -68,7 +68,7 @@ async function login(email, password) {
 async function mainChecks() {
   const guest = client();
 
-  // ---- auth ----
+  // auth
   const admin = await login('admin@journeyhub.test', 'Admin123!');
   expectStatus('admin login', admin.res, 200);
   check('admin has admin role', admin.res.data?.user?.role === 'admin');
@@ -105,7 +105,7 @@ async function mainChecks() {
     200
   );
 
-  // ---- stories ----
+  // stories
   const story = await maya.request('POST', '/stories', {
     destination: city.Lisbon._id,
     title: 'Smoke test story',
@@ -134,7 +134,7 @@ async function mainChecks() {
   const search = await guest('GET', '/stories?q=bamboo');
   check(`story search "bamboo" finds ${search.data?.total} story`, search.data?.total === 1);
 
-  // ---- reviews ----
+  // reviews
   const mayaKyoto = await maya.request('GET', `/reviews/mine?destination=${city.Kyoto._id}`);
   const reviewId = mayaKyoto.data.review._id;
   expectStatus("omar edits maya's review", await omar.request('PUT', `/reviews/${reviewId}`, { rating: 1 }), 403);
@@ -150,7 +150,7 @@ async function mainChecks() {
   const dash = await omar.request('GET', '/users/me/dashboard');
   check(`omar dashboard counts ${JSON.stringify(dash.data?.counts)}`, dash.data?.counts?.savedPlaces === 2);
 
-  // ---- trip plans ----
+  // trip plans
   expectStatus('trip with end date before start date', await maya.request('POST', '/trips', {
     title: 'Backwards trip',
     startDate: dateFromToday(10),
@@ -171,7 +171,7 @@ async function mainChecks() {
   expectStatus("omar opens maya's private trip", await omar.request('GET', `/trips/${tripId}`), 403);
   expectStatus("omar deletes maya's trip", await omar.request('DELETE', `/trips/${tripId}`), 403);
 
-  // ---- bookings ----
+  // bookings
   const kyotoStays = await guest('GET', `/accommodations?destination=${city.Kyoto._id}`);
   const stay = kyotoStays.data.accommodations[0];
   expectStatus('booking with check-out before check-in', await maya.request('POST', '/bookings', {
@@ -211,7 +211,7 @@ async function mainChecks() {
   const mayaOnly = await maya.request('GET', '/bookings');
   check('members only see their own bookings', mayaOnly.data.bookings.every((b) => b.member._id === maya.res.data.user._id));
 
-  // ---- reports and moderation ----
+  // reports and moderation
   const mayaStories = await maya.request('GET', '/stories?mine=true');
   const target = mayaStories.data.stories.find((s) => s.title === 'Apricot season in Hunza');
   expectStatus('maya reports her own story', await maya.request('POST', '/reports', { targetType: 'story', targetId: target._id, reason: 'test' }), 400);
@@ -233,7 +233,7 @@ async function mainChecks() {
   expectStatus('admin dismisses the seeded review report', await admin.request('PATCH', `/reports/${reviewReport._id}`, { action: 'dismiss' }), 200);
   expectStatus('handle the same report twice', await admin.request('PATCH', `/reports/${reviewReport._id}`, { action: 'hide' }), 409);
 
-  // ---- bad input ----
+  // bad input
   expectStatus('invalid id in url', await guest('GET', '/stories/not-an-id'), 400);
   expectStatus('unknown route', await guest('GET', '/nothing-here'), 404);
 
