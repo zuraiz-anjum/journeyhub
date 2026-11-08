@@ -6,6 +6,8 @@ looks after the destination catalogue, accommodation listings, booking requests 
 
 Built for our Web Programming course project with React, Node.js/Express and MongoDB.
 
+**Group members:** Muhammad Zuraiz Anjum (l232547@lhr.nu.edu.pk) and Zoraiz Rizwan (l236008@lhr.nu.edu.pk)
+
 ## Features
 
 - **Accounts:** sign up, log in, log out, edit profile (name, home city, bio). One seeded admin account.
@@ -58,6 +60,9 @@ journeyhub/
       pages/              one file per page, admin pages in pages/admin
       utils/              date/money formatting and form validation
       types.ts            TypeScript types for the data models
+      test/               shared helpers for the unit tests (*.test.ts files sit next to the code)
+    e2e/                  Playwright browser tests and the screenshot script
+  docs/screenshots/       pictures used in this README
 ```
 
 ## Setup
@@ -123,6 +128,44 @@ It logs in as the demo users and checks the main rules: ownership (403), login r
 ratings and dates (400), booking cancel and confirm, report and hide. After restarting the server,
 `npm run smoke -- --after-restart` checks that the data from the first run is still in the database.
 
+### 5. Unit tests (client)
+
+The client has unit tests written with Vitest and React Testing Library. They do not need the server or
+the database, the API calls are mocked.
+
+```bash
+cd client
+npm test              # runs all tests once
+npm run test:watch    # re-runs the tests when a file changes
+```
+
+They cover the Redux auth slice (reducers and the login thunk), the login and sign up forms (validation
+messages, what gets sent, redirect after login, server errors), the story and trip plan forms (required
+fields, future travel date, end date before start date, 60 day limit), the review star rating and the
+booking request form (past dates, check-out after check-in, guest count), plus the shared validation
+rules in `utils/validation.ts`.
+
+### 6. Browser tests (Playwright)
+
+`client/e2e/` has browser tests that click through the whole app in Chrome: a visitor, a new member
+signing up, the two demo members and the admin, plus a phone sized window (390px wide). They check
+loading, empty, success and error states, that members cannot open admin pages or edit other members'
+content, and that nothing on a phone screen needs sideways scrolling.
+
+You need MongoDB running and Google Chrome installed (the tests use the installed Chrome, no extra
+browser download). The API and the Vite dev server are started automatically if they are not already
+running.
+
+```bash
+cd client
+npm run e2e
+```
+
+**Note:** the tests run `npm run seed` first, so the database is reset to the demo data every time.
+
+`npm run screenshots` (with the API and the dev server running) saves the pictures below again into
+`docs/screenshots/`. It also reseeds the database first.
+
 ## Demo accounts
 
 All accounts are made up and are created by `npm run seed`.
@@ -135,6 +178,51 @@ All accounts are made up and are created by `npm run seed`.
 
 The seed also adds 7 destinations (one of them archived), 8 stories, 6 reviews, a trip plan, 6 accommodation
 listings, 3 booking requests and one open report.
+
+## Screenshots
+
+Desktop (1280px wide), with the demo data from `npm run seed`.
+
+**Destinations with search and budget filters**
+
+![Destinations list](docs/screenshots/destinations.png)
+
+**Destination details: places to visit, places to stay and reviews**
+
+![Destination details](docs/screenshots/destination-details.png)
+
+**Travel story feed with search and pages**
+
+![Story feed](docs/screenshots/story-feed.png)
+
+**Member dashboard**
+
+![Member dashboard](docs/screenshots/member-dashboard.png)
+
+**Trip plan with day by day activities**
+
+![Trip plan](docs/screenshots/trip-plan.png)
+
+**Booking request form and booking history**
+
+![Booking request form](docs/screenshots/booking-request.png)
+
+![Booking history](docs/screenshots/booking-history.png)
+
+**Admin: destinations, reported content and booking requests**
+
+![Admin destinations](docs/screenshots/admin-destinations.png)
+
+![Admin reports](docs/screenshots/admin-reports.png)
+
+![Admin booking requests](docs/screenshots/admin-bookings.png)
+
+**Phone (390px wide): destinations and the open menu**
+
+<p>
+  <img src="docs/screenshots/mobile-destinations.png" alt="Destinations on a phone" width="300">
+  <img src="docs/screenshots/mobile-menu.png" alt="Menu on a phone" width="300">
+</p>
 
 ## How a request flows from the React form to the database
 
@@ -235,5 +323,5 @@ The same rules are checked in the React forms and again on the server:
 
 | Member | Name | Work done |
 | ------ | ---- | --------- |
-| Member 1 | ______________ | ______________________________ |
-| Member 2 | ______________ | ______________________________ |
+| Member 1 | Muhammad Zuraiz Anjum (l232547@lhr.nu.edu.pk) | ______________________________ |
+| Member 2 | Zoraiz Rizwan (l236008@lhr.nu.edu.pk) | ______________________________ |
