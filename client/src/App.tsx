@@ -18,6 +18,8 @@ import TripsPage from './pages/TripsPage';
 import TripFormPage from './pages/TripFormPage';
 import TripDetailPage from './pages/TripDetailPage';
 import BookingsPage from './pages/BookingsPage';
+import DashboardPage from './pages/DashboardPage';
+import ProfilePage from './pages/ProfilePage';
 import AdminDestinationsPage from './pages/admin/AdminDestinationsPage';
 import AdminDestinationFormPage from './pages/admin/AdminDestinationFormPage';
 import AdminReportsPage from './pages/admin/AdminReportsPage';
@@ -52,6 +54,15 @@ export default function App() {
           <Route path="/stories/:id" element={<StoryDetailPage />} />
           <Route path="/stories/:id/edit" element={memberOnly(<StoryFormPage />)} />
 
+          <Route path="/dashboard" element={memberOnly(<DashboardPage />)} />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <ProfilePage />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/favourites" element={memberOnly(<FavouritesPage />)} />
 
           <Route path="/trips" element={memberOnly(<TripsPage />)} />
