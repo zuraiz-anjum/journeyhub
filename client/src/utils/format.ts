@@ -13,8 +13,11 @@ export function toDateInput(value: string | Date | undefined): string {
   return date.toISOString().slice(0, 10);
 }
 
+// today's date where the user is (not in UTC, which is a different day for part of the night)
 export function todayInput(): string {
-  return new Date().toISOString().slice(0, 10);
+  const now = new Date();
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
 }
 
 export function formatMoney(amount: number): string {

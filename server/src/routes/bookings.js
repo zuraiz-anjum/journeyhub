@@ -11,9 +11,13 @@ const STATUSES = ['Pending', 'Confirmed', 'Rejected', 'Cancelled'];
 
 router.use(requireAuth);
 
-function startOfToday() {
-  // dates from the form come in as YYYY-MM-DD which JS reads as UTC midnight
-  return new Date(new Date().toISOString().slice(0, 10));
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+// Earliest check-in date we accept. Dates from the form come in as YYYY-MM-DD which JS
+// reads as UTC midnight. The member's "today" can be a day behind UTC (or ahead of it),
+// so allow one day of slack, same as story travel dates.
+function earliestCheckIn() {
+  return new Date(new Date(new Date().toISOString().slice(0, 10)).getTime() - DAY_MS);
 }
 
 async function loadBooking(id) {
@@ -51,7 +55,7 @@ router.post('/', requireRole('member'), async (req, res) => {
 
   const checkIn = parseDate(req.body.checkIn, 'Check-in date');
   const checkOut = parseDate(req.body.checkOut, 'Check-out date');
-  if (checkIn < startOfToday()) throw new HttpError(400, 'Check-in date cannot be in the past');
+  if (checkIn < earliestCheckIn()) throw new HttpError(400, 'Check-in date cannot be in the past');
   if (checkOut <= checkIn) throw new HttpError(400, 'Check-out must be at least one day after check-in');
 
   const guests = Number(req.body.guests);
