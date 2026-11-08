@@ -1,16 +1,24 @@
+import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import api, { getErrorMessage } from '../api/client';
 import { useApi } from '../hooks/useApi';
+import { useAppSelector } from '../store';
 import type { Destination } from '../types';
 import { formatMoney } from '../utils/format';
 import RatingStars from '../components/RatingStars';
 import { FALLBACK_IMAGE } from '../utils/images';
 import { ErrorAlert, Loading } from '../components/StatusMessages';
+import ReviewSection from '../components/ReviewSection';
 
 export default function DestinationDetailPage() {
   const { id } = useParams();
-  const { data, loading, error, reload } = useApi<{ destination: Destination }>(`/destinations/${id}`);
+  const user = useAppSelector((state) => state.auth.user);
+  const { data, loading, error, reload, setData } = useApi<{ destination: Destination }>(`/destinations/${id}`);
+  const [savingFav, setSavingFav] = useState(false);
+  const [favError, setFavError] = useState<string | null>(null);
 
-  if (loading) return <Loading />;
+  // only show the spinner on the first load, reloads keep the page on screen
+  if (loading && !data) return <Loading />;
   if (error || !data) {
     return (
       <>
@@ -21,6 +29,23 @@ export default function DestinationDetailPage() {
   }
 
   const destination = data.destination;
+
+  async function toggleFavourite() {
+    setSavingFav(true);
+    setFavError(null);
+    try {
+      if (destination.isFavourite) {
+        await api.delete(`/users/me/favourites/${destination._id}`);
+      } else {
+        await api.post(`/users/me/favourites/${destination._id}`);
+      }
+      setData({ destination: { ...destination, isFavourite: !destination.isFavourite } });
+    } catch (err) {
+      setFavError(getErrorMessage(err));
+    } finally {
+      setSavingFav(false);
+    }
+  }
 
   return (
     <>
@@ -47,9 +72,20 @@ export default function DestinationDetailPage() {
               <div className="mb-2">
                 <RatingStars value={destination.averageRating} count={destination.reviewCount} />
               </div>
-              <p className="mb-0">
+              <p className="mb-2">
                 Estimated budget: <strong>{formatMoney(destination.estimatedBudget)}</strong>
               </p>
+              {user?.role === 'member' && (
+                <button
+                  type="button"
+                  className={'btn btn-sm ' + (destination.isFavourite ? 'btn-success' : 'btn-outline-success')}
+                  onClick={toggleFavourite}
+                  disabled={savingFav}
+                >
+                  {destination.isFavourite ? '♥ Saved' : '♡ Save to favourites'}
+                </button>
+              )}
+              {favError && <div className="text-danger small mt-2">{favError}</div>}
             </div>
           </div>
 
@@ -69,6 +105,8 @@ export default function DestinationDetailPage() {
           </div>
         </div>
       </div>
+
+      <ReviewSection destinationId={destination._id} onChanged={reload} />
     </>
   );
 }

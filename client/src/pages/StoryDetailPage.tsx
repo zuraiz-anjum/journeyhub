@@ -6,6 +6,7 @@ import { useAppSelector } from '../store';
 import type { Story } from '../types';
 import { formatDate } from '../utils/format';
 import { ErrorAlert, Loading } from '../components/StatusMessages';
+import ReportButton from '../components/ReportButton';
 
 export default function StoryDetailPage() {
   const { id } = useParams();
@@ -68,6 +69,12 @@ export default function StoryDetailPage() {
         />
       )}
       <p className="story-text">{story.text}</p>
+
+      {user?.role === 'member' && !isOwner && !story.hidden && (
+        <div className="mt-4">
+          <ReportButton targetType="story" targetId={story._id} />
+        </div>
+      )}
 
       {isOwner && (
         <div className="d-flex gap-2 mt-4">

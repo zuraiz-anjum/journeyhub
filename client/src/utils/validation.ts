@@ -29,3 +29,8 @@ export function validateStory(form: StoryForm): string | null {
   if (!isValidUrl(form.imageUrl)) return 'Image URL must start with http:// or https://';
   return null;
 }
+
+export function validateRating(rating: number): string | null {
+  if (!Number.isInteger(rating) || rating < 1 || rating > 5) return 'Please pick a rating from 1 to 5 stars';
+  return null;
+}
