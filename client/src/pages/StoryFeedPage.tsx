@@ -14,6 +14,8 @@ export default function StoryFeedPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [q, setQ] = useState(searchParams.get('q') ?? '');
   const [destination, setDestination] = useState(searchParams.get('destination') ?? '');
+  // the dashboard links here with mine=true to list only the member's own stories
+  const mine = searchParams.get('mine') === 'true';
 
   // keep the search box and the select in step with the url (back button, navbar link)
   useEffect(() => {
@@ -29,6 +31,7 @@ export default function StoryFeedPage() {
   function search(e: FormEvent) {
     e.preventDefault();
     const next: Record<string, string> = {};
+    if (mine) next.mine = 'true';
     if (q.trim()) next.q = q.trim();
     if (destination) next.destination = destination;
     setSearchParams(next);
@@ -44,7 +47,14 @@ export default function StoryFeedPage() {
   return (
     <>
       <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-        <h1 className="h3 mb-0">Travel stories</h1>
+        <div>
+          <h1 className="h3 mb-0">{mine ? 'My stories' : 'Travel stories'}</h1>
+          {mine && (
+            <Link to="/stories" className="small">
+              Show stories from everyone
+            </Link>
+          )}
+        </div>
         {user?.role === 'member' && (
           <Link to="/stories/new" className="btn btn-primary">
             Write a story
