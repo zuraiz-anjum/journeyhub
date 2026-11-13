@@ -1,4 +1,4 @@
-import { test, expect, login, hasHorizontalScroll, MAYA, ADMIN } from './helpers';
+import { test, expect, login, hasHorizontalScroll, controlsOutsideWindow, MAYA, ADMIN } from './helpers';
 
 // Phone sized window (iPhone 12/13/14 width). Pages must not scroll sideways and the
 // navbar collapses into the menu button.
@@ -15,6 +15,7 @@ async function checkPages(page: import('@playwright/test').Page, paths: string[]
     await expect(page.locator('main')).not.toBeEmpty();
     await expect(page.getByRole('status').filter({ hasText: /Loading|Checking/ })).toHaveCount(0);
     expect(await hasHorizontalScroll(page), `sideways scroll on ${path}`).toBe(false);
+    expect(await controlsOutsideWindow(page), `buttons cut off on ${path}`).toEqual([]);
   }
 }
 

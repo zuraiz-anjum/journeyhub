@@ -60,9 +60,9 @@ export default function AdminBookingsPage() {
             <thead>
               <tr>
                 <th>Member</th>
-                <th>Place</th>
-                <th>Dates</th>
-                <th>Guests</th>
+                <th className="d-none d-md-table-cell">Place</th>
+                <th className="d-none d-md-table-cell">Dates</th>
+                <th className="d-none d-md-table-cell">Guests</th>
                 <th>Status</th>
                 <th />
               </tr>
@@ -73,25 +73,33 @@ export default function AdminBookingsPage() {
                   <td>
                     {b.member?.name ?? 'deleted user'}
                     <div className="small text-muted">{b.member?.email}</div>
+                    {/* on a phone the place, dates and guests go here instead of their own columns */}
+                    <div className="small d-md-none mt-1">
+                      {b.accommodation?.name ?? 'Listing removed'}
+                      {b.accommodation?.destination && `, ${b.accommodation.destination.city}`}
+                      <div className="text-muted">
+                        {formatDate(b.checkIn)} to {formatDate(b.checkOut)} · {b.guests} guest{b.guests === 1 ? '' : 's'}
+                      </div>
+                    </div>
                   </td>
-                  <td>
+                  <td className="d-none d-md-table-cell">
                     {b.accommodation?.name ?? 'Listing removed'}
                     <div className="small text-muted">{b.accommodation?.destination?.city}</div>
                   </td>
-                  <td className="small">
+                  <td className="small d-none d-md-table-cell">
                     {formatDate(b.checkIn)} to {formatDate(b.checkOut)}
                     {b.note && <div className="text-muted">"{b.note}"</div>}
                   </td>
-                  <td>{b.guests}</td>
+                  <td className="d-none d-md-table-cell">{b.guests}</td>
                   <td>
                     <BookingStatusBadge status={b.status} />
                   </td>
-                  <td className="text-end text-nowrap">
+                  <td className="text-end">
                     {b.status === 'Pending' && (
-                      <>
+                      <div className="d-flex flex-column flex-sm-row gap-1 justify-content-end">
                         <button
                           type="button"
-                          className="btn btn-sm btn-success me-1"
+                          className="btn btn-sm btn-success"
                           disabled={busyId === b._id}
                           onClick={() => decide(b, 'Confirmed')}
                         >
@@ -105,7 +113,7 @@ export default function AdminBookingsPage() {
                         >
                           Reject
                         </button>
-                      </>
+                      </div>
                     )}
                   </td>
                 </tr>

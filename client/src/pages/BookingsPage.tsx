@@ -52,9 +52,9 @@ export default function BookingsPage() {
             <thead>
               <tr>
                 <th>Place</th>
-                <th>Dates</th>
-                <th>Guests</th>
-                <th>Estimate</th>
+                <th className="d-none d-md-table-cell">Dates</th>
+                <th className="d-none d-md-table-cell">Guests</th>
+                <th className="d-none d-md-table-cell">Estimate</th>
                 <th>Status</th>
                 <th />
               </tr>
@@ -71,12 +71,16 @@ export default function BookingsPage() {
                     ) : (
                       <span className="text-muted">Listing removed</span>
                     )}
+                    {/* on a phone the dates and guests go under the name instead of their own columns */}
+                    <div className="small text-muted d-md-none">
+                      {formatDate(b.checkIn)} to {formatDate(b.checkOut)} · {b.guests} guest{b.guests === 1 ? '' : 's'}
+                    </div>
                   </td>
-                  <td className="small">
+                  <td className="small d-none d-md-table-cell">
                     {formatDate(b.checkIn)} to {formatDate(b.checkOut)}
                   </td>
-                  <td>{b.guests}</td>
-                  <td className="small">
+                  <td className="d-none d-md-table-cell">{b.guests}</td>
+                  <td className="small d-none d-md-table-cell">
                     {b.accommodation
                       ? formatMoney(nightsBetween(b.checkIn, b.checkOut) * b.accommodation.pricePerNight)
                       : '-'}
