@@ -1,6 +1,8 @@
 // Form checks that mirror the server rules. The server checks everything again,
 // these are here so the user gets feedback before a request is sent.
 
+import { todayInput } from './format';
+
 export function isValidUrl(value: string): boolean {
   if (!value.trim()) return true; // optional fields
   try {
@@ -24,7 +26,7 @@ export function validateStory(form: StoryForm): string | null {
   if (!form.title.trim()) return 'Please give your story a title';
   if (form.title.trim().length > 120) return 'Title must be 120 characters or less';
   if (!form.travelDate) return 'Please enter the date you travelled';
-  if (form.travelDate > new Date().toISOString().slice(0, 10)) return 'Travel date cannot be in the future';
+  if (form.travelDate > todayInput()) return 'Travel date cannot be in the future';
   if (!form.text.trim()) return 'Please write something about your trip';
   if (!isValidUrl(form.imageUrl)) return 'Image URL must start with http:// or https://';
   return null;
@@ -62,7 +64,7 @@ export interface BookingForm {
 }
 
 export function validateBooking(form: BookingForm, maxGuests: number): string | null {
-  const today = new Date().toISOString().slice(0, 10);
+  const today = todayInput();
   if (!form.checkIn || !form.checkOut) return 'Please pick check-in and check-out dates';
   if (form.checkIn < today) return 'Check-in date cannot be in the past';
   if (form.checkOut <= form.checkIn) return 'Check-out must be at least one day after check-in';
