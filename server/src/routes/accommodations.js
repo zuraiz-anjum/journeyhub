@@ -16,13 +16,19 @@ function readNumber(value, label, min) {
   return n;
 }
 
-async function readAccommodationBody(body, { partial = false } = {}) {
+// currentDestination: the destination an edited listing already has. A listing may keep a
+// destination that was archived later, but it cannot be added to or moved onto one.
+async function readAccommodationBody(body, { partial = false, currentDestination = null } = {}) {
   if (!partial) requireFields(body, ['destination', 'name', 'pricePerNight', 'maxGuests']);
   const data = {};
   if (body.destination !== undefined) {
     checkId(body.destination, 'destination');
-    const exists = await Destination.exists({ _id: body.destination });
-    if (!exists) throw new HttpError(400, 'Destination does not exist');
+    const destination = await Destination.findById(body.destination).select('archived');
+    if (!destination) throw new HttpError(400, 'Destination does not exist');
+    const keepsCurrent = currentDestination && currentDestination.toString() === destination._id.toString();
+    if (destination.archived && !keepsCurrent) {
+      throw new HttpError(400, 'Destination is archived, listings cannot be added to it');
+    }
     data.destination = body.destination;
   }
   if (body.name !== undefined) data.name = body.name;
@@ -38,13 +44,19 @@ async function readAccommodationBody(body, { partial = false } = {}) {
 }
 
 // GET /api/accommodations?destination=<id>&includeInactive=true
+// includeInactive is the admin management view, it also lists stays at archived destinations.
 router.get('/', optionalAuth, async (req, res) => {
   const filter = {};
   const isAdmin = req.user && req.user.role === 'admin';
-  if (!(isAdmin && req.query.includeInactive === 'true')) filter.active = true;
+  if (!(isAdmin && req.query.includeInactive === 'true')) {
+    filter.active = true;
+    // archived destinations are hidden from members, so are their listings
+    const archived = await Destination.distinct('_id', { archived: true });
+    filter.destination = { $nin: archived };
+  }
   if (req.query.destination) {
     checkId(req.query.destination, 'destination');
-    filter.destination = req.query.destination;
+    filter.destination = { ...filter.destination, $eq: req.query.destination };
   }
   const accommodations = await Accommodation.find(filter)
     .sort({ pricePerNight: 1 })
@@ -55,9 +67,10 @@ router.get('/', optionalAuth, async (req, res) => {
 // GET /api/accommodations/:id
 router.get('/:id', optionalAuth, async (req, res) => {
   checkId(req.params.id, 'accommodation id');
-  const accommodation = await Accommodation.findById(req.params.id).populate('destination', 'city country');
+  const accommodation = await Accommodation.findById(req.params.id).populate('destination', 'city country archived');
   const isAdmin = req.user && req.user.role === 'admin';
-  if (!accommodation || (!accommodation.active && !isAdmin)) {
+  const visible = accommodation && accommodation.active && accommodation.destination && !accommodation.destination.archived;
+  if (!accommodation || (!visible && !isAdmin)) {
     throw new HttpError(404, 'Accommodation not found');
   }
   res.json({ accommodation });
@@ -73,7 +86,8 @@ router.put('/:id', requireAuth, requireRole('admin'), async (req, res) => {
   checkId(req.params.id, 'accommodation id');
   const accommodation = await Accommodation.findById(req.params.id);
   if (!accommodation) throw new HttpError(404, 'Accommodation not found');
-  Object.assign(accommodation, await readAccommodationBody(req.body, { partial: true }));
+  const data = await readAccommodationBody(req.body, { partial: true, currentDestination: accommodation.destination });
+  Object.assign(accommodation, data);
   await accommodation.save();
   res.json({ accommodation });
 });

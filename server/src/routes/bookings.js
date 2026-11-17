@@ -50,8 +50,10 @@ router.post('/', requireRole('member'), async (req, res) => {
   requireFields(req.body, ['accommodation', 'checkIn', 'checkOut', 'guests']);
   checkId(req.body.accommodation, 'accommodation');
 
-  const accommodation = await Accommodation.findById(req.body.accommodation);
-  if (!accommodation || !accommodation.active) throw new HttpError(404, 'Accommodation not found');
+  // listings of an archived destination cannot be booked, even with a known id
+  const accommodation = await Accommodation.findById(req.body.accommodation).populate('destination', 'archived');
+  const bookable = accommodation && accommodation.active && accommodation.destination && !accommodation.destination.archived;
+  if (!bookable) throw new HttpError(404, 'Accommodation not found');
 
   const checkIn = parseDate(req.body.checkIn, 'Check-in date');
   const checkOut = parseDate(req.body.checkOut, 'Check-out date');

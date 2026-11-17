@@ -125,7 +125,8 @@ npm run smoke
 ```
 
 It logs in as the demo users and checks the main rules: ownership (403), login required (401), bad
-ratings and dates (400), booking cancel and confirm, report and hide. After restarting the server,
+ratings and dates (400), booking cancel and confirm, report and hide, and that listings of an archived
+destination are hidden and cannot be booked. After restarting the server,
 `npm run smoke -- --after-restart` checks that the data from the first run is still in the database.
 
 ### 5. Unit tests (client)
