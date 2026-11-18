@@ -91,10 +91,11 @@ export default function BookingForm({ accommodation, onCancel }: Props) {
           />
         </div>
         <div className="col-12">
+          <label htmlFor={`note-${accommodation._id}`} className="form-label small mb-1">Note</label>
           <input
+            id={`note-${accommodation._id}`}
             className="form-control form-control-sm"
-            placeholder="Note for the host (optional)"
-            aria-label="Note"
+            placeholder="Optional, e.g. late check-in"
             maxLength={500}
             value={form.note}
             onChange={(e) => setForm({ ...form, note: e.target.value })}
