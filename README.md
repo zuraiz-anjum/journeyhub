@@ -165,7 +165,9 @@ npm run e2e
 **Note:** the tests run `npm run seed` first, so the database is reset to the demo data every time.
 
 `npm run screenshots` (with the API and the dev server running) saves the pictures below again into
-`docs/screenshots/`. It also reseeds the database first.
+`docs/screenshots/`. It also reseeds the database first. `npm run screenshots -- --all <folder>` saves
+every main screen instead, as a visitor, a member and the admin, at desktop and phone size, and lists
+any browser console errors or failed requests it saw.
 
 ## Demo accounts
 
