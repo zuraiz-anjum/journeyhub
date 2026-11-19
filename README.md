@@ -125,7 +125,8 @@ npm run smoke
 ```
 
 It logs in as the demo users and checks the main rules: ownership (403), login required (401), bad
-ratings and dates (400), booking cancel and confirm, report and hide. After restarting the server,
+ratings and dates (400), booking cancel and confirm, report and hide, and that listings of an archived
+destination are hidden and cannot be booked. After restarting the server,
 `npm run smoke -- --after-restart` checks that the data from the first run is still in the database.
 
 ### 5. Unit tests (client)
@@ -164,7 +165,9 @@ npm run e2e
 **Note:** the tests run `npm run seed` first, so the database is reset to the demo data every time.
 
 `npm run screenshots` (with the API and the dev server running) saves the pictures below again into
-`docs/screenshots/`. It also reseeds the database first.
+`docs/screenshots/`. It also reseeds the database first. `npm run screenshots -- --all <folder>` saves
+every main screen instead, as a visitor, a member and the admin, at desktop and phone size, and lists
+any browser console errors or failed requests it saw.
 
 ## Demo accounts
 

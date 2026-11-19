@@ -167,7 +167,7 @@ export default function TripDetailPage() {
         <button type="button" className="btn btn-primary" onClick={saveDays} disabled={saving || !dirty}>
           {saving ? 'Saving...' : 'Save plan'}
         </button>
-        {dirty && <span className="small text-warning">You have unsaved changes</span>}
+        {dirty && <span className="small text-warning-emphasis">You have unsaved changes</span>}
       </div>
     </>
   );
