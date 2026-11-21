@@ -2,6 +2,21 @@ body {
   background-color: #f8f9fb;
 }
 
+/* one shade darker than bg-primary so the menu links stay readable (about 5:1 instead of 2.4:1) */
+.navbar.app-navbar {
+  background-color: #0a58ca;
+  --bs-navbar-color: rgba(255, 255, 255, 0.85);
+  --bs-navbar-hover-color: #fff;
+  --bs-navbar-active-color: #fff;
+}
+
+/* the current page, now that the other links are almost as bright */
+.app-navbar .nav-link.active {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.4em;
+}
+
 .card-img-top.cover {
   height: 180px;
   object-fit: cover;
@@ -25,7 +40,8 @@ body {
 .star-input button {
   font-size: 1.5rem;
   line-height: 1;
-  color: #ccc;
+  /* empty stars need 3:1 against white to be seen as part of the control */
+  color: #868e96;
 }
 
 .star-input button.on {
