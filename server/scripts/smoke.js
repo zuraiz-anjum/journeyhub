@@ -99,11 +99,49 @@ async function mainChecks() {
     estimatedBudget: 100,
   });
   expectStatus('admin creates a destination', newDest, 201);
+  const newDestId = newDest.data.destination._id;
+  const smokeStay = await admin.request('POST', '/accommodations', {
+    destination: newDestId,
+    name: 'Smoke Town Inn',
+    pricePerNight: 50,
+    maxGuests: 2,
+  });
+  expectStatus('admin adds a listing to it', smokeStay, 201);
+  const smokeStayId = smokeStay.data.accommodation._id;
   expectStatus(
     'admin archives it',
-    await admin.request('PATCH', `/destinations/${newDest.data.destination._id}/archive`, { archived: true }),
+    await admin.request('PATCH', `/destinations/${newDestId}/archive`, { archived: true }),
     200
   );
+
+  // listings of an archived destination are hidden and cannot be booked
+  const publicStays = await guest('GET', '/accommodations');
+  check('archived destination listing hidden from the public list', !publicStays.data.accommodations.some((a) => a._id === smokeStayId));
+  const byDest = await maya.request('GET', `/accommodations?destination=${newDestId}`);
+  check('archived destination listing hidden when filtered by destination', byDest.data?.accommodations?.length === 0);
+  expectStatus('guest opens a listing of an archived destination', await guest('GET', `/accommodations/${smokeStayId}`), 404);
+  expectStatus('maya books a listing of an archived destination', await maya.request('POST', '/bookings', {
+    accommodation: smokeStayId,
+    checkIn: dateFromToday(20),
+    checkOut: dateFromToday(22),
+    guests: 1,
+  }), 404);
+  const adminStays = await admin.request('GET', '/accommodations?includeInactive=true');
+  check('admin still sees the listing in the management list', adminStays.data.accommodations.some((a) => a._id === smokeStayId));
+  expectStatus('admin edits the listing and keeps its archived destination', await admin.request('PUT', `/accommodations/${smokeStayId}`, {
+    destination: newDestId,
+    pricePerNight: 55,
+  }), 200);
+  expectStatus('admin adds a new listing to an archived destination', await admin.request('POST', '/accommodations', {
+    destination: newDestId,
+    name: 'Too late',
+    pricePerNight: 10,
+    maxGuests: 1,
+  }), 400);
+  const kyotoStay = (await guest('GET', `/accommodations?destination=${city.Kyoto._id}`)).data.accommodations[0];
+  expectStatus('admin moves a listing onto an archived destination', await admin.request('PUT', `/accommodations/${kyotoStay._id}`, {
+    destination: newDestId,
+  }), 400);
 
   // stories
   const story = await maya.request('POST', '/stories', {
