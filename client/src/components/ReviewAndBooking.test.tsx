@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { fireEvent, screen, within } from '@testing-library/react';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import api from '../api/client';
 import ReviewSection from './ReviewSection';
@@ -70,7 +70,8 @@ describe('ReviewSection rating', () => {
     renderPage(<ReviewSection destinationId="d1" onChanged={vi.fn()} />, { user: member });
 
     expect(await screen.findByRole('button', { name: 'Update review' })).toBeInTheDocument();
-    expect(screen.getByRole('radio', { name: '3 stars' })).toHaveAttribute('aria-checked', 'true');
+    // the saved review is copied into the form by an effect after it loads
+    await waitFor(() => expect(screen.getByRole('radio', { name: '3 stars' })).toHaveAttribute('aria-checked', 'true'));
     expect(screen.getByLabelText('Review comment')).toHaveValue('Nice but busy.');
 
     await user.click(screen.getByRole('radio', { name: '5 stars' }));
